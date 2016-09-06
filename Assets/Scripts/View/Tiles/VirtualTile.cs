@@ -31,6 +31,10 @@ namespace Assets.Scripts.View.Tiles
                 var layerData = layers[i];
                 if (IsOldVisual(i, layerData))
                 {
+                    if (layerObjects[i] != null)
+                    {
+                        layerObjects[i].transform.localPosition = transform.position;
+                    }
                     continue;
                 }
 
