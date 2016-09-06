@@ -62,7 +62,7 @@ namespace Assets.Scripts.View.Tiles
             if (visualInstanceCache.TryGetValue(index, out tiles) && tiles.Any())
             {
                 var visualObject = tiles.Pop();
-                visualObject.transform.SetParent(tile.transform);
+                visualObject.transform.SetParent(tile.transform, false);
                 visualObject.SetActive(true);
                 return visualObject;
             }
@@ -77,6 +77,7 @@ namespace Assets.Scripts.View.Tiles
         public static void FreeVisualInstance(GameObject tile)
         {
             tile.SetActive(false);
+            tile.transform.SetParent(null, false);
 
             var visualIndex = tile.GetComponent<TileData>().VisualIndex;
             Stack<GameObject> tiles;

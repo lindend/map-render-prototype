@@ -10,57 +10,47 @@ namespace Assets.Scripts.View.Tiles
     class VirtualTile : MonoBehaviour
     {
         private Tile tile = null;
-        private GameObject[] layers = null;
+        private GameObject[] layerObjects = null;
 
         public TileVisual[] TileVisuals = null;
+
+        public int[] LayerData;
 
         public void SetData(Tile tile)
         {
             TileVisualCache.Update(TileVisuals);
-            //ClearTileLayers();
 
-
-            layers = layers ?? new GameObject[tile.Layers.Length];
+            layerObjects = layerObjects ?? new GameObject[tile.Layers.Length];
 
             UpdateTileLayers(tile.Layers);
             this.tile = tile;
         }
-
-        private void ClearTileLayers()
+        
+        private void UpdateTileLayers(int[] layers)
         {
-            foreach (var layer in layers ?? Enumerable.Empty<GameObject>())
-            {
-                if (layer == null)
-                    continue;
+            LayerData = layers;
 
-                layer.GetComponent<Renderer>().enabled = false;
-            }
-        }
-
-        private void UpdateTileLayers(IEnumerable<int> layers)
-        {
-            var layerIdx = 0;
-            foreach (var layer in layers)
+            for (var i = 0; i < layers.Length; ++i)
             {
-                if (IsOldVisual(layerIdx, layer))
+                var layerData = layers[i];
+                if (IsOldVisual(i, layerData))
                 {
-                    if (this.layers[layerIdx] != null)
+                    if (this.layerObjects[i] != null)
                     {
-                        this.layers[layerIdx].transform.localPosition = Vector3.zero;
+                        this.layerObjects[i].transform.localPosition = Vector3.zero;
                     }
                     continue;
                 }
 
-                if (this.layers[layerIdx] != null)
+                if (this.layerObjects[i] != null)
                 {
-                    TileVisualCache.FreeVisualInstance(this.layers[layerIdx]);
-                    this.layers[layerIdx] = null;
+                    TileVisualCache.FreeVisualInstance(this.layerObjects[i]);
+                    this.layerObjects[i] = null;
                 }
 
-                var visual = TileVisualCache.GetTileVisualInstance(gameObject, layer);
+                var visual = TileVisualCache.GetTileVisualInstance(gameObject, layerData);
 
-                this.layers[layerIdx] = visual;
-                layerIdx += 1;
+                this.layerObjects[i] = visual;
             }
         }
 
