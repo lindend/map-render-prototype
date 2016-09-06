@@ -47,12 +47,11 @@ namespace Assets.Scripts.View.Tiles
                     var tileIndex = x + y * width;
 
                     var tileObject = GetOrCreateTile(tileIndex, tilePrefab);
-                    var virtualTile = tileObject.GetComponent<VirtualTile>();
-                    virtualTile.SetData(tileData[tileIndex]);
-
-                    tileObject.transform.SetParent(transform, false);
                     tileObject.transform.localRotation = Quaternion.identity;
                     tileObject.transform.localPosition = new Vector3(x * resolution, 0f, y * resolution);
+
+                    var virtualTile = tileObject.GetComponent<VirtualTile>();
+                    virtualTile.SetData(tileData[tileIndex]);
                 }
             }
         }
@@ -63,6 +62,7 @@ namespace Assets.Scripts.View.Tiles
             if (tile == null)
             {
                 tile = Instantiate(tilePrefab);
+                tile.transform.SetParent(transform, false);
                 tiles[tileIndex] = tile;
             }
             return tile;

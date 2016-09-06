@@ -8,6 +8,19 @@ namespace Assets.Scripts.View.Tiles
 {
     static class TileVisualCache
     {
+        private static GameObject rootObject;
+        private static GameObject Root
+        {
+            get
+            {
+                if (rootObject == null)
+                {
+                    rootObject = new GameObject("TileCache");
+                }
+                return rootObject;
+            }
+        }
+
         private static TileVisual[] tileVisualsCacheVersion;
         private static UnityEngine.Object defaultVisualCache;
         private static Dictionary<int, UnityEngine.Object> tileVisualsCache;
@@ -39,7 +52,7 @@ namespace Assets.Scripts.View.Tiles
             return result;
         }
 
-        public static GameObject GetTileVisualInstance(GameObject tile, int index)
+        public static GameObject GetTileVisualInstance(int index)
         {
             var visual = GetTileVisual(index);
             if (visual == null)
@@ -51,24 +64,22 @@ namespace Assets.Scripts.View.Tiles
                 return null;
             }
 
-            var layerVisual = GetVisualObject(tile, index, visual);
-            layerVisual.transform.localPosition = Vector3.zero;
+            var layerVisual = GetVisualObject(index, visual);
             return layerVisual;
         }
 
-        private static GameObject GetVisualObject(GameObject tile, int index, UnityEngine.Object visual)
+        private static GameObject GetVisualObject(int index, UnityEngine.Object visual)
         {
             Stack<GameObject> tiles;
             if (visualInstanceCache.TryGetValue(index, out tiles) && tiles.Any())
             {
                 var visualObject = tiles.Pop();
-                visualObject.transform.SetParent(tile.transform, false);
                 visualObject.SetActive(true);
                 return visualObject;
             }
             else
             {
-                var newObject = (GameObject)GameObject.Instantiate(visual, tile.transform);
+                var newObject = (GameObject)GameObject.Instantiate(visual, Root.transform);
                 newObject.AddComponent<TileData>().VisualIndex = index;
                 return newObject;
             }
@@ -77,7 +88,6 @@ namespace Assets.Scripts.View.Tiles
         public static void FreeVisualInstance(GameObject tile)
         {
             tile.SetActive(false);
-            tile.transform.SetParent(null, false);
 
             var visualIndex = tile.GetComponent<TileData>().VisualIndex;
             Stack<GameObject> tiles;

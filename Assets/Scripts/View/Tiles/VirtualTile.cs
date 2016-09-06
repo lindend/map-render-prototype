@@ -12,14 +12,10 @@ namespace Assets.Scripts.View.Tiles
         private Tile tile = null;
         private GameObject[] layerObjects = null;
 
-        public TileVisual[] TileVisuals = null;
-
         public int[] LayerData;
 
         public void SetData(Tile tile)
         {
-            TileVisualCache.Update(TileVisuals);
-
             layerObjects = layerObjects ?? new GameObject[tile.Layers.Length];
 
             UpdateTileLayers(tile.Layers);
@@ -35,10 +31,6 @@ namespace Assets.Scripts.View.Tiles
                 var layerData = layers[i];
                 if (IsOldVisual(i, layerData))
                 {
-                    if (this.layerObjects[i] != null)
-                    {
-                        this.layerObjects[i].transform.localPosition = Vector3.zero;
-                    }
                     continue;
                 }
 
@@ -48,7 +40,11 @@ namespace Assets.Scripts.View.Tiles
                     this.layerObjects[i] = null;
                 }
 
-                var visual = TileVisualCache.GetTileVisualInstance(gameObject, layerData);
+                var visual = TileVisualCache.GetTileVisualInstance(layerData);
+                if (visual != null)
+                {
+                    visual.transform.localPosition = transform.position;
+                }
 
                 this.layerObjects[i] = visual;
             }

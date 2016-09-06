@@ -23,6 +23,8 @@ namespace Assets.Scripts.View.Tiles
         public Camera Camera = null;
         public GameObject TilePrefab = null;
 
+        public TileVisual[] TileVisuals = null;
+
         private TileMap tileMap = new TileMap();
         private Tile[] loadTilesBuffer = new Tile[chunkWidth * chunkHeight];
         private Queue<VirtualTileChunk> unusedChunks = new Queue<VirtualTileChunk>();
@@ -35,6 +37,7 @@ namespace Assets.Scripts.View.Tiles
         void Start()
         {
             chunkSize = new Vector3(chunkWidth * tileMap.Resolution, 0f, chunkHeight * tileMap.Resolution);
+            TileVisualCache.Update(TileVisuals);
         }
 
         private Vector3 CoordinatesToPosition(Coordinate coordinates)
@@ -114,7 +117,7 @@ namespace Assets.Scripts.View.Tiles
         {
             var chunkObject = new GameObject("Chunk", typeof(VirtualTileChunk));
             var chunkComponent = chunkObject.GetComponent<VirtualTileChunk>();
-            chunkObject.transform.parent = transform;
+            chunkObject.transform.SetParent(transform, false);
             chunks.Add(chunkComponent);
             return chunkComponent;
         }
